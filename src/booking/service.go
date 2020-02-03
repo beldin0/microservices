@@ -2,16 +2,10 @@ package main
 
 import (
 	"context"
-	"log"
+	"time"
 
 	"github.com/beldin0/microservices/pkg/microservice"
 )
-
-func main() {
-	defer log.Println("Service closed")
-	log.Println("Service started")
-	microservice.Run(context.Background(), &service{})
-}
 
 var _ microservice.Service = (*service)(nil)
 
@@ -30,6 +24,7 @@ func (s *service) Start(ctx context.Context) error {
 	// remember to monitor the context for cancellation
 
 	<-ctx.Done()
+	time.Sleep(10 * time.Second)
 	return nil
 }
 
