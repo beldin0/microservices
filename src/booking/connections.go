@@ -15,8 +15,12 @@ func (s *service) Connections() []*microservice.Connection {
 
 func (s *service) buildConnections() []*microservice.Connection {
 	connections := []*microservice.Connection{}
+	connections = append(connections, s.msgbusConn())
+	return connections
+}
 
-	conn := &microservice.Connection{
+func (s *service) msgbusConn() *microservice.Connection {
+	return &microservice.Connection{
 		Name: "messagebus",
 		Operation: func() error {
 			var err error
@@ -27,7 +31,4 @@ func (s *service) buildConnections() []*microservice.Connection {
 			return err
 		},
 	}
-
-	connections = append(connections, conn)
-	return connections
 }
