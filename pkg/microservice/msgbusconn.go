@@ -1,17 +1,23 @@
 package microservice
 
+import "context"
+
+// This file is an example connection that could be required by a microservice
+
+// MessagebusConfig would contain any config requirements for connecting to the messagebus
 type MessagebusConfig struct {
-	// Config requirements for the service go in here
 }
 
-func MessagebusConnection(config *MessagebusConfig, AtLeastOnce interface{}) *Connection {
+// MessagebusConnection returns a Connection that can be used to connect to a messagebus service
+func MessagebusConnection(config *MessagebusConfig, AtLeastOnce *context.Context) *Connection {
+	name := "messagebus"
 	return &Connection{
-		Name: "messagebus",
+		Name: name,
 		Operation: func() error {
 			var err error
-			AtLeastOnce, err = func() (interface{}, error) {
+			*AtLeastOnce, err = func() (context.Context, error) {
 				// return nil, errors.New("unable to connect")
-				return nil, nil
+				return context.Background(), nil
 			}()
 			return err
 		},

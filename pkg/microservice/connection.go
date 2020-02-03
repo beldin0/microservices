@@ -10,6 +10,17 @@ import (
 	backoff "github.com/cenkalti/backoff/v4"
 )
 
+var errNotConnected = errors.New("service not connected")
+
+// Connection collects the variables that are needed for Backoff to run when connecting to an external service
+type Connection struct {
+	// Name is the service name that is used in notifications about the connection
+	Name string
+
+	// Operation is a function that meets the definition required by the backoff package to create the connection
+	Operation func() error
+}
+
 func setupConnections(ctx context.Context, conns []*Connection) error {
 	var wg sync.WaitGroup
 	connectedServices := make(chan struct{}, len(conns))

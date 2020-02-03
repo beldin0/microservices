@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/beldin0/microservices/pkg/microservice"
 )
@@ -10,9 +9,11 @@ import (
 var _ microservice.Service = (*service)(nil)
 
 type service struct {
-	connections []*microservice.Connection
-	messagebus  interface{}
-	running     chan error
+	messagebus context.Context // just using context as an example interface
+	running    chan error
+}
+
+type bus interface {
 }
 
 func (s *service) Start(ctx context.Context) error {
@@ -24,7 +25,6 @@ func (s *service) Start(ctx context.Context) error {
 	// remember to monitor the context for cancellation
 
 	<-ctx.Done()
-	time.Sleep(10 * time.Second)
 	return nil
 }
 

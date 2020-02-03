@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+// New returns a new MService with the supplied context
+// It also starts up a goroutine with the interrupt listener that cancels the context when an interrupt is received.
 func New(ctx context.Context) *MService {
 	ctx, cancel := context.WithCancel(ctx)
 	go cancelOnInterrupt(cancel)
@@ -17,10 +19,12 @@ func New(ctx context.Context) *MService {
 	return m
 }
 
+// MService collects the functionality to operate a microservice
 type MService struct {
 	ctx context.Context
 }
 
+// SetupConnections creates connections to the supplied Connections concurrently and returns when they have all been created (or all timed out)
 func (m *MService) SetupConnections(conns ...*Connection) error {
 	if len(conns) == 0 {
 		return nil
@@ -28,6 +32,7 @@ func (m *MService) SetupConnections(conns ...*Connection) error {
 	return setupConnections(m.ctx, conns)
 }
 
+// Start starts the supplied service. It wraps the call to service.Start() with context cancellation and interrupt monitoring
 func (m *MService) Start(service Service) error {
 	ctx, cancel := context.WithCancel(m.ctx)
 
@@ -67,21 +72,6 @@ func (m *MService) Start(service Service) error {
 
 const maxShutdownTime = 5 * time.Second
 const maxConnectionTime = 5 * time.Minute
-
-var errNotConnected = errors.New("service not connected")
-
-// Connection defines the functions that are needed for Backoff to run
-// when connecting to an external service
-type Connection struct {
-	Name      string
-	Operation func() error
-}
-
-// Service represents the methods to initialise, start and stop a microservice
-type Service interface {
-	Start(context.Context) error
-	Shutdown(context.Context) error
-}
 
 func cancelOnInterrupt(cancel context.CancelFunc) {
 	defer cancel()
